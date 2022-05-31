@@ -1,0 +1,70 @@
+Create a heroku file for python
+
+#open cmd
+
+go to the pythons file directory 
+
+#create a requirements file 
+
+pipreqs ./
+
+# create a Procfile with cmd  
+
+echo some-text  > filename
+
+copy and paste the following in the Procfile
+#-------------------------------------------------------------
+mkdir -p ~/.streamlit/
+
+echo "\
+[general]\n\
+email = \"your-email@domain.com\"\n\
+" > ~/.streamlit/credentials.toml
+
+echo "\
+[server]\n\
+headless = true\n\
+enableCORS=false\n\
+port = $PORT\n\
+" > ~/.streamlit/config.toml
+
+#------------------------------------------------------------------
+
+
+#create a setup file with cmd
+
+echo some-text  > filename.sh 
+
+# open the setup file with notepad
+
+web: sh setup.sh && streamlit run (name of the app).py
+
+
+#login to heroku 
+
+heroku login 
+
+# type the rest 
+heroku create
+
+git add . 
+
+git commit -am "Initial Commit"
+
+git push heroku main
+
+heroku open 
+
+
+streamlit run TestingPyStreamlit.py
+
+
+
+----------------------------------------------------------------
+
+git to github
+
+
+
+
+

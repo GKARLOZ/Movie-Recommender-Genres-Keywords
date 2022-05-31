@@ -173,7 +173,22 @@ def recommended_movies(movie_matched):
 
     st.altair_chart(bars, use_container_width=True)
 
+    #--------------------------pie chart---------------------------------------
     
+    #The plot
+    fig = go.Figure(
+            go.Pie(
+            
+        labels = TitleArr,
+        values = ScoreArr,
+        hoverinfo = "label+percent",
+        textinfo = "value"
+                ))
+    st.header("Pie Chart")
+    st.plotly_chart(fig)
+    st.stop()
+    
+    #-----------------------------------end of function-------------------------------------
 
 
 
