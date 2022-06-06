@@ -68,7 +68,6 @@ movies_genres_vectorized = tfVectorized.fit_transform(attributes_merged)
 cos_similarity = cosine_similarity(movies_genres_vectorized)
 
 
-
 #this method sends input to the recommender function
 def ifMatched():
     
@@ -172,7 +171,6 @@ def recommended_movies(movie_matched):
     bars = (bars + text).properties(height=600)
 
     st.altair_chart(bars, use_container_width=True)
-
     #----------------------------------Scatterplot ----------------------------------------
 
     SScoreArr = []
@@ -202,14 +200,79 @@ def recommended_movies(movie_matched):
     
     
     df_for_scatter = pd.DataFrame(prep_dataTesting)
-    st.write(" You can predict the 10 most similar movies by using this graph. ")
+    st.write(df_for_scatter.head())
+    #--------------------------------------------
 
     c = alt.Chart(df_for_scatter).mark_circle().encode(
         x='Movie Index', y='Similarity Scores', size='Similarity Scores', color='Similarity Scores', tooltip=['Similarity Scores', 'Film Title','Movie Index'])
                 
 
     st.altair_chart(c, use_container_width=True)
+
+    #----------------------------------------------------------------------------------------
+    df_for_scatter =  df_for_scatter.drop(df_for_scatter.index[0])
+    cc = alt.Chart(df_for_scatter).mark_circle().encode(
+    x='Movie Index', y='Similarity Scores', size='Similarity Scores', color='Similarity Scores', tooltip=['Similarity Scores', 'Film Title','Movie Index'])
+                
+
+    st.altair_chart(cc, use_container_width=True)
+
+    #----------------------------------------------------------------------------------------
+
+
+     #----------------------------------Scatterplot ----------------------------------------
+
+    SScoreArr = []
+    M_indexArr = []
+    scTitleArr  = []
+    j = 0
+
+    for a in sorted_ScoreList:
+
+
+        z = a[1] * 100
+        if z > 0:
+            SScoreArr.append(z.round(1))
+            M_indexArr.append(j)
+            title =  df_movies[df_movies.index == a[0]]['Title'].values[0] 
+            scTitleArr.append(title)
+            j = j + 1
+
+        
+        
+        
+
+    
+    prep_dataTesting = {'Movie Index':M_indexArr,'Similarity Scores':SScoreArr, 'Film Title':scTitleArr}
+
+    
+    
+    df_for_scatter = pd.DataFrame(prep_dataTesting)
+    aaa = df_for_scatter[df_for_scatter.index == 0]['Film Title'].values[0] 
+    #aaa = df_for_scatter.index[0]
+    st.write(aaa)
     #--------------------------------------------
+    
+    df_for_scatter =  df_for_scatter.drop(df_for_scatter.index[0])
+    cc = alt.Chart(df_for_scatter).mark_circle().encode(
+    x = 'Movie Index', y='Similarity Scores', size='Similarity Scores', color='Similarity Scores', tooltip=['Similarity Scores', 'Film Title','Movie Index'])            
+
+    st.altair_chart(cc, use_container_width=True)
+
+    #----------------------------------------------------------------------------------------
+    '''
+    
+
+    df = pd.DataFrame(
+        np.random.randn(200,2),
+        columns=['a', 'b'])    
+
+    c = alt.Chart(df).mark_circle().encode(
+        x='a', y='b', size='b', color='b', tooltip=['a', 'b'])  
+
+    st.altair_chart(c, use_container_width=True)
+    '''
+    #-------------------------------------------------------------------
 
     
 
