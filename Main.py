@@ -37,14 +37,13 @@ df_movies = pd.DataFrame().assign(Title=df_movies['movie_title'],Director=df_mov
 
 
 
-#
-movies_genres = df_movies['Genres']
+#movies_genres = df_movies['Genres']
 
 #converting the text data to feature vectors
-tfVectorized = TfidfVectorizer()
+#tfVectorized = TfidfVectorizer()
 
 
-movies_genres_vectorized = tfVectorized.fit_transform(movies_genres)
+#movies_genres_vectorized = tfVectorized.fit_transform(movies_genres)
 
 #the attributes that will be compared 
 attributes = ['Genres','Keywords']
@@ -54,7 +53,7 @@ for x in attributes:
     df_movies[x] = df_movies[x].fillna('')
     
 # a dataframe of genres and keywords attributes 
-attributes_merged = df_movies['Genres']+''+df_movies['Keywords']
+attributes_merged = df_movies['Genres']+df_movies['Keywords']
 
 
 #creating a vertor variable
@@ -64,8 +63,11 @@ tfVectorized = TfidfVectorizer()
 movies_genres_vectorized = tfVectorized.fit_transform(attributes_merged)
 
 
+
 #getting the similarity score using cosine similarity
 cos_similarity = cosine_similarity(movies_genres_vectorized)
+
+
 
 
 
@@ -88,7 +90,7 @@ def ifMatched():
     movie_title_list= df_movies['Title'].tolist()
     movies_searched = difflib.get_close_matches(input_movie, movie_title_list)
 
-    print(movies_searched)
+ 
     #st.write(movies_searched)
     
     movie_matched = movies_searched[0]
@@ -110,16 +112,18 @@ def recommended_movies(movie_matched):
     # getting a list of similar movies
     similarityScoreList = list(enumerate(cos_similarity[movie_index]))
 
-    len(similarityScoreList)
-
+    
+ 
     sorted_ScoreList = sorted(similarityScoreList, key = lambda x:x[1], reverse = True)
 
     ScoreArr  = []
     TitleArr  = []
     GenrArr   = []
     actorArr = []
+    AccuracyArr = [0,0,0,0,0]
 
     i = 1
+    w = 1
 
     for movies in sorted_ScoreList:
         a = movies[0]
@@ -129,12 +133,46 @@ def recommended_movies(movie_matched):
 
         b = movies[1]*100
         b = b.round(1)
+
+        
+
+        
+
+        
+
+        #--------------------------------------------------
+       
         if(i<=11):
             TitleArr.append(title)
             ScoreArr.append(b)
             GenrArr.append(genres)
             actorArr.append(actor)
+           
             i+=1
+
+
+       
+        if(w <=100):
+             #--------------values for recommendation accuracy------------------------
+            if b >= 50:
+                AccuracyArr[0] += 1
+            elif b < 50 and b >= 40:
+                AccuracyArr[1] += 1
+            elif b < 40 and b >=20:
+                AccuracyArr[2] += 1
+            elif b < 20 and b >= 10:
+                AccuracyArr[3] += 1
+            elif b < 10 and b > 0:
+                AccuracyArr[4] += 1
+
+            w+=1
+            #-------
+
+           
+
+
+
+     
     #-----------------------------Table of movies------------------------------------------
     prep_data = {'Movie Titles':TitleArr,'Actors':actorArr,'Genres':GenrArr,'Similarity Scores':ScoreArr}
     table_movies = pd.DataFrame(prep_data)
@@ -146,7 +184,8 @@ def recommended_movies(movie_matched):
     st.write(table_movies.iloc[1:11])
 
 
-    #-----------------------bar chart------------------------------------------
+     #-----------------------bar chart------------------------------------------
+
 
     df_for_barChart = {'Movie Titles':TitleArr,'Similarity Scores':ScoreArr}
     df_barChart = pd.DataFrame(df_for_barChart)
@@ -170,10 +209,12 @@ def recommended_movies(movie_matched):
     )
 
     bars = (bars + text).properties(height=600)
+    st.header("Bar chart")
 
     st.altair_chart(bars, use_container_width=True)
 
-    #----------------------------------Scatterplot ----------------------------------------
+
+     #-----------------------------------------Scatterplot-----------------------------------
 
     SScoreArr = []
     M_indexArr = []
@@ -186,22 +227,14 @@ def recommended_movies(movie_matched):
         M_indexArr.append(a[0])
         title =  df_movies[df_movies.index == a[0]]['Title'].values[0] 
         scTitleArr.append(title)
-                
-
-        
-            
-       
-
-        
-        
-        
-
+         
     
     prep_dataTesting = {'Movie Index':M_indexArr,'Similarity Scores':SScoreArr, 'Film Title':scTitleArr}
 
     
     
     df_for_scatter = pd.DataFrame(prep_dataTesting)
+    st.header("Scatterplot")
     st.write(" You can predict the 10 most similar movies by using this graph. ")
 
     c = alt.Chart(df_for_scatter).mark_circle().encode(
@@ -209,7 +242,29 @@ def recommended_movies(movie_matched):
                 
 
     st.altair_chart(c, use_container_width=True)
-    #--------------------------------------------
+
+     #--------------------------pie chart---------------------------------------
+    
+    AccuracyTypes = ['High', 'Med/High','Medium','Med/Low','Low']
+
+
+    #The plot
+    fig = go.Figure(
+            go.Pie(
+            
+        labels = AccuracyTypes,
+        values = AccuracyArr,
+        hoverinfo = "label+percent",
+        textinfo = "value"
+                ))
+    st.header("Pie Chart")
+    st.plotly_chart(fig)
+    
+    #---------------end of method----------------------
+
+
+
+    
 
     
 
@@ -225,6 +280,8 @@ try:
   recommended_movies(name_of_movie)
 except Exception as e:
   print(e)
+
+print('Done')
   
 
 
